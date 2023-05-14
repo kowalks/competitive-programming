@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
-// #define int long long
+#define pb push_back
+#define f first
+#define s second
 
 using namespace std;
 
@@ -7,6 +9,10 @@ typedef long long ll;
 typedef pair<int, int> ii;
 typedef vector<int> vi;
 typedef vector<ii> vii;
+
+const int INF = 0x3F3F3F3F;
+const ll LINF = 0x3F3F3F3F3F3F3F3FLL;
+const int MAX = 100005;
 
 void solve(){
     return;
