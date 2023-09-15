@@ -3,6 +3,9 @@
 #define f first
 #define s second
 
+#define endl '\n'
+#define _ ios_base::sync_with_stdio(0); cin.tie(0);
+
 using namespace std;
 
 typedef long long ll;
@@ -18,7 +21,7 @@ void solve(){
     return;
 }
 
-int32_t main () {
+int32_t main () { _
     int t; cin >> t;
     while(t--)
         solve();

@@ -6,3 +6,4 @@
 *.txt
 *.exe
 .DS_Store
+*.DSMY/
