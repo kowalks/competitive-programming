@@ -1,30 +1,21 @@
-#include <bits/stdc++.h>
-
-#define endl '\n'
-#define _ ios_base::sync_with_stdio(0); cin.tie(0);
+#include<bits/stdc++.h>
+#define int long long
 
 using namespace std;
-
 typedef vector<int> vi;
-typedef long long ll;
-typedef vector<ll> vl;
 
-vi p, r;
-vl s;
+vi p, r, s;
 
-void init(int n) {
-    p = vi(n+1); iota(p.begin(), p.end(), 0);
-    r = vi(n+1, 0);
-    s = vl(n+1, 0);
+int get(int a){
+    if (p[a] == a)
+        return a;
+    int rep = get(p[a]);
+    if (p[p[a]] != p[a])
+        s[a] += s[p[a]];
+    return p[a] = rep;
 }
 
-int get(int a) {
-    if (p[p[a]] == p[a]) return p[a];
-    s[a] += s[p[a]];
-    return p[a] = get(p[a]);
-}
-
-void une(int a, int b) {
+void join(int a, int b) {
     a = get(a); b = get(b);
     if (a == b)
         return;
@@ -36,31 +27,33 @@ void une(int a, int b) {
     s[b] -= s[a];
 }
 
-void add(int a, int val) {
-    a = get(a);
-    s[a] += val;
+void add(int x, int v){
+    x = get(x);
+    s[x] += v;
 }
 
-void solve(){
-    string ss; cin >> ss;
-    if (ss == "add") {
-        int a, v; cin >> a >> v;
-        add(a, v);
-    } else if (ss == "join") {
-        int a, b; cin >> a >> b;
-        une(a, b);
-        return;
-    } else if (ss == "get") {
-        int a; cin >> a;
-        int b = get(a);
-        if (a == b) cout << s[a] << endl;
-        else cout << s[a] + s[b] << endl;
-    }
+void init(int n){
+    p = vi(n+1); iota(p.begin(), p.end(), 0);
+    r = vi(n+1, 0ll);
+    s = vi(n+1, 0ll);
 }
 
-int32_t main () { _
+int32_t main() {
     int n, m; cin >> n >> m;
     init(n);
-    while(m--)
-        solve();
+
+    while(m--) {
+        string str; cin >> str;
+        if (str == "join") {
+            int x, y; cin >> x >> y;
+            join(x, y);
+        } else if (str == "add") {
+            int x, v; cin >> x >> v;
+            add(x, v);
+        } else if (str == "get") {
+            int x; cin >> x;
+            int y = get(x);
+            cout << s[x] + ((x != y) ? s[y] : 0ll) << endl;
+        }
+    }
 }
