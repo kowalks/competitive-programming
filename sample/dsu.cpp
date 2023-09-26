@@ -1,8 +1,4 @@
-#include<bits/stdc++.h>
-
-using namespace std;
-
-typedef vector<int> vi;
+#include "template.h"
 
 struct DSU {
     vi p, r, s, v;
@@ -49,23 +45,3 @@ struct DSU {
 
     int value(int a) { int b = get(a); return v[a] + (a != b ? v[b] : 0); }
 };
-
-
-int32_t main () {
-    int n, m; cin >> n >> m;
-
-    auto dsu = DSU(n);
-    while(m--) {
-        string str; cin >> str;
-        if (str == "join") {
-            int x, y; cin >> x >> y;
-            dsu.join(x, y);
-        } else if (str == "add") {
-            int x, v; cin >> x >> v;
-            dsu.add(x, v);
-        } else if (str == "get") {
-            int x; cin >> x;
-            cout << dsu.value(x) << endl;
-        }
-    }
-}
