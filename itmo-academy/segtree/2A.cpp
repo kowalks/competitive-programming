@@ -1,72 +1,60 @@
-#include <bits/stdc++.h>
-#define MAXN 100005
-// #define int long long
+#include<bits/stdc++.h>
 
 using namespace std;
-
 typedef long long ll;
-typedef pair<int, int> ii;
+typedef tuple<ll, ll, ll, ll> info;  // seg, pre, suf, sum
 typedef vector<int> vi;
-typedef vector<ii> vii;
 
-int v[MAXN];
-tuple<ll,ll,ll,ll> seg[4*MAXN]; // segment, pref, suf, sum
-
-tuple<ll,ll,ll,ll> merge(tuple<ll,ll,ll,ll> a, tuple<ll,ll,ll,ll> b) {
-    auto [aseg, ap, as, asum] = a;
-    auto [bseg, bp, bs, bsum] = b;
-    return {max(aseg, max(bseg, as + bp)), max(ap, asum + bp), max(bs, bsum + as), asum + bsum};
+info operator+(info a, info b) {
+    auto [aseg, apre, asuf, asum] = a;
+    auto [bseg, bpre, bsuf, bsum] = b;
+    return {max(aseg, max(bseg, asuf + bpre)), max(apre, asum + bpre), max(bsuf, bsum + asuf), asum + bsum};            
 }
 
-tuple<ll,ll,ll,ll> build(int p, int l, int r) {
-    int val = v[l] > 0 ? v[l] : 0;
-    if (l==r) return seg[p] = {val, val, val, v[l]};
-    int m = (l+r)/2;
-    return seg[p] = merge(build(2*p,l,m), build(2*p+1,m+1,r));
-}
+struct Segtree {
+    int n; vi v;
+    vector<info> seg;
 
-// tuple<ll,ll,ll,ll> query(int a, int b, int p, int l, int r) {
-//     if (b < l or r < a) return {0,0,0,0};
-//     if (a <= l and r <= b) return seg[p];
-//     int m = (l+r)/2;
-//     return merge(query(a,b,2*p,l,m), query(a,b,2*p+1,m+1,r));
-// }
-
-tuple<ll,ll,ll,ll> update(int i, int x, int p, int l, int r) {
-    if (i < l or r < i) return seg[p];
-
-    int val = x > 0 ? x : 0;
-    if (l == r) return seg[p] = {val, val, val, x};
-
-    int m = (l+r)/2;
-    return seg[p] = merge(update(i,x,2*p,l,m), update(i,x,2*p+1,m+1,r));
-}
-
-void pt(tuple<ll,ll,ll,ll> t) {
-    auto [a,b,c,d] = t;
-    cout << "{" << a << ", " << b << ", " << c << ", " << d << "}";
-}
-
-void print() {
-    for (int i=1; i < 10; i++) {
-        cout << "seg[" << i << "] = ";
-        pt(seg[i]);
-        cout << endl;
+    Segtree(vi v): v(v) {
+        n = v.size();
+        seg = vector<info>(4*n);
+        build(1, 0, n-1);
     }
-}
 
-int32_t main () {
+    info build(int p, int l, int r) {
+        if (l == r) {
+            int x = max(v[l], 0);
+            return seg[p] = {x, x, x, v[l]};
+        }
+        int m = (l+r)/2;
+        return seg[p] = build(2*p, l, m) + build(2*p+1, m+1, r);
+    }
+
+    info update(int i, int x, int p, int l, int r) {
+        if (i < l or r < i) return seg[p];
+        if (l == r) {
+            int k = max(x, 0);
+            return seg[p] = {k, k, k, x};
+        }
+        int m = (l+r)/2;
+        return seg[p] = update(i, x, 2*p, l, m) + update(i, x, 2*p+1, m+1, r);
+    }
+
+    info update(int i, int x) { return update(i, x, 1, 0, n-1); }
+
+    ll query() { return get<0>(seg[1]); }
+};
+
+int main () {
     int n, m; cin >> n >> m;
-    for (int i=0; i < n; i++) cin >> v[i];
+    vi a(n); for (auto& x : a) cin >> x;
 
-    auto s = build(1,0,n-1);
-    cout << get<0>(s) << endl;
+    auto segtree = Segtree(a);
+    cout << segtree.query() << endl;
 
-    // print();
-
-    while(m--) {
+    while (m--) {
         int i, v; cin >> i >> v;
-        s = update(i,v,1,0,n-1);
-        cout << get<0>(s) << endl;
+        segtree.update(i, v);
+        cout << segtree.query() << endl;
     }
 }

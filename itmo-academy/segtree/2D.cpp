@@ -1,68 +1,55 @@
-#include <bits/stdc++.h>
-#define pb push_back
-#define f first
-#define s second
+#include<bits/stdc++.h> 
 
 using namespace std;
-
-typedef long long ll;
-typedef pair<int, int> ii;
 typedef vector<int> vi;
-typedef vector<ii> vii;
 
-const int INF = 0x3F3F3F3F;
-const ll LINF = 0x3F3F3F3F3F3F3F3FLL;
-const int MAX = 100005;
+struct Segtree {
+    int n; vi v;
+    vi seg;
 
-int v[MAX];
-int seg[4*MAX];
-
-int build(int p, int l, int r) {
-    if (l == r) return seg[p] = v[l];
-    int m = (l+r)/2;
-    return seg[p] = max(build(2*p,l,m), build(2*p+1,m+1,r));
-}
-
-int update(int i, int x, int p, int l, int r) {
-    if (i < l or r < i) return seg[p];
-    if (l == r) return seg[p] = x;
-    int m = (l+r)/2;
-    return seg[p] = max(update(i,x,2*p,l,m), update(i,x,2*p+1,m+1,r));
-}
-
-int find(int i, int x, int p, int l, int r) {
-    // cout << "find(" << i << ", " << x << ", " << p << ", " << l << ", " << r << ")" << endl;
-    if (x > seg[p]) return -1;
-    if (r < i) return -1;
-    if (l == r) return l;
-    
-    int m = (l+r)/2;
-    int idx = find(i,x,2*p,l,m);
-    if (idx > -1) return idx;
-    return find(i,x,2*p+1,m+1,r);
-}
-
-void print() {
-    for (int i=1; i < 10; i++) {
-        cout << "seg[" << i << "]=" << seg[i] << endl;
+    Segtree(vi v): v(v) {
+        int n = v.size();
+        seg = vi(4*n);
+        build(1, 0, n-1);
     }
-}
 
-int32_t main () {
+    int build(int p, int l, int r) {
+        if (l == r) return seg[p] = v[l];
+        int m = (l+r)/2;
+        return seg[p] = max(build(2*p, l, m), build(2*p+1, m+1, r));
+    }
+
+    int update(int i, int x, int p, int l, int r) {
+        if (i < l or r < i) return seg[p];
+        if (l == r) return seg[p] = x;
+        int m = (l+r)/2;
+        return seg[p] = max(update(i, x, 2*p, l, m), update(i, x, 2*p+1, m+1, r));
+    }
+
+    int get_left(int a, int b, int val, int p, int l, int r) {
+        if (b < l or r < a or seg[p] < val) return -1;
+        if (l == r) return l;
+        int m = (l+r)/2;
+        int x = get_left(a, b, val, 2*p, l, m);
+        if (x != -1) return x;
+        return get_left(a, b, val, 2*p+1, m+1, r);
+    }
+};
+
+int main () {
     int n, m; cin >> n >> m;
-    for (int i=0; i < n; i++) cin >> v[i];
+    vi a(n); for (auto& x : a) cin >> x;
 
-    build(1,0,n-1);
-    // print();
-
-    while(m--){
-        int q; cin >> q;
-        if (q == 1) {
+    auto seg = Segtree(a);
+    while(m--) {
+        int x; cin >> x;
+        if (x == 1){
             int i, v; cin >> i >> v;
-            update(i,v,1,0,n-1);
-        } else if (q == 2) {
+            seg.update(i, v, 1, 0, n-1);
+        }
+        else {
             int x, l; cin >> x >> l;
-            cout << find(l,x,1,0,n-1) << endl;
+            cout << seg.get_left(l, n-1, x, 1, 0, n-1) << endl;
         }
     }
 }
