@@ -1,44 +1,38 @@
-#include <bits/stdc++.h>
-#define pb push_back
-#define f first
-#define s second
+#include<bits/stdc++.h>
 
 using namespace std;
-
-typedef long long ll;
-typedef pair<int, int> ii;
 typedef vector<int> vi;
-typedef vector<ii> vii;
 
-const int INF = 0x3F3F3F3F;
-const ll LINF = 0x3F3F3F3F3F3F3F3FLL;
-const int MAXN = 100005;
+struct Segtree {
+    int n;
+    vi seg;
 
-int p[MAXN];
-ll seg[4*MAXN];
+    Segtree(int n): n(n) {
+        seg = vi(4*n);
+    }
 
-ll update(int i, int x, int p, int l, int r) {
-    if (i < l or r < i) return seg[p];
-    if (l == r) return seg[p] = x;
-    int m = (l+r)/2;
-    return seg[p] = update(i,x,2*p,l,m) + update(i,x,2*p+1,m+1,r);
-}
+    int update(int i, int x, int p, int l, int r) {
+        if (i < l or r < i) return seg[p];
+        if (l == r) return seg[p] = x;
+        int m = (l+r)/2;
+        return seg[p] = update(i, x, 2*p, l, m) + update(i, x, 2*p+1, m+1, r);
+    }
 
-ll query(int a, int b, int p, int l, int r) {
-    if (r < a or b < l) return 0LL;
-    if (a <= l and r <= b) return seg[p];
-    int m = (l+r)/2;
-    return query(a,b,2*p,l,m) + query(a,b,2*p+1,m+1,r);
-}
+    int query(int a, int b, int p, int l, int r) {
+        if (b < l or r < a) return 0;
+        if (a <=l and r <= b) return seg[p];
+        int m = (l+r)/2;
+        return query(a, b, 2*p, l, m) + query(a, b, 2*p+1, m+1, r);
+    }
+};
 
-int32_t main () {
+int main () {
     int n; cin >> n;
-    for (int i=0; i < n; i++) cin >> p[i];
+    auto seg = Segtree(n);
 
     for (int i=0; i < n; i++) {
-        ll resp = query(p[i],n-1,1,0,n-1);
-        update(p[i]-1,1,1,0,n-1);
-        cout << resp << " ";
+        int p; cin >> p; p--;
+        cout << seg.query(p, n-1, 1, 0, n-1) << " ";
+        seg.update(p, 1, 1, 0, n-1);
     }
-    cout << endl;
 }
