@@ -1,17 +1,18 @@
-#include <graph.h>
+#include "graph.h"
 
 vi Graph::conncomp() {
-    vi vis(n, 0), cc(n, 0);
+    vi vis(n, 0);
+    int cc = 0;
 
-    function<void(int)> dfs = [&](int a) {
-        vis[a] = 1;
-        for (auto v : g[a])
+    function<void(int)> dfs = [&](int u) {
+        vis[u] = cc;
+        for (auto v : g[u])
             if (!vis[v]) dfs(v);
     };
 
-    int cnt = 0;
+    int cc = 0;
     for (int i=0; i < n; i++)
-        if (!vis[i]) cnt++, dfs(i);
+        if (!vis[i]) cc++, dfs(i);
     
-    return cc;
+    return vis;
 }
