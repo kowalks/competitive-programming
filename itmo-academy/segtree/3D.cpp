@@ -4,16 +4,15 @@
 
 using namespace std;
 typedef vector<int> vi;
-
-vi a;
+const int INF = 0x3f3f3f3f;
 
 struct Segtree {
-    int n; vi seg, cnt, left;
+    int n; vi v;
+    vi seg;
 
     Segtree(int n): n(n) {
-        seg = vi(4*n);
-        cnt = vi(n/2, 0);
-        left = vi(n/2);
+        v.resize(n); fill(v.begin(), v.end(), 0);
+        seg.resize(4*n); fill(seg.begin(), seg.end(), 0);
     }
 
     int update(int i, int x, int p, int l, int r) {
@@ -27,40 +26,42 @@ struct Segtree {
 
     int query(int a, int b, int p, int l, int r) {
         if (b < l or r < a) return 0;
-        if (l == r) return seg[p];
+        if (a <= l and r <= b) return seg[p];
         int m = (l+r)/2;
         return query(a, b, 2*p, l, m) + query(a, b, 2*p+1, m+1, r);
     }
 
     int query(int a, int b) { return query(a, b, 1, 0, n-1); }
-
-    void count() {
-        for (int i=n-1; i >= 0; i--)
-            left[a[i]] = i;
-        for (int i=0 ; i < n; i++) {
-            if (left[a[i]] == i) { // left
-                update(i, 1);
-            } else { // rigjt
-                update(left[a[i]], 0);
-                cnt[a[i]] += query(left[a[i]], i);
-            }
-        }
-    }
 };
 
 int main () { _
     int n; cin >> n;
-    a.resize(2*n); for (int& x : a) {
-        scanf("%d", &x);
-        x--;
-    }
+    vi first(n, INF), last(n, INF);
+    vi ans(n, 0); vi a(2*n, 0);
 
     auto seg = Segtree(2*n);
-    seg.count();
-    reverse(a.begin(), a.end());
-    seg.count();
+    for (int i=0; i < 2*n; i++) {
+        int k; cin >> k; a[i] = --k;
+        if (first[k] == INF) { // left end
+            first[k] = i;
+            seg.update(i, 1);
+        } else { // right end
+            seg.update(first[k], 0);
+            ans[k] += seg.query(first[k], i);
+        }
+    }
 
-    for (int i=0; i < n; i++)
-        printf("%d ", seg.cnt[i]);
-    printf("\n");
+    for (int i=2*n-1; i >= 0; i--) {
+        int k = a[i];
+        if (last[k] == INF) { // right end 
+            last[k] = i;
+            seg.update(i, 1);
+        } else { // left end
+            seg.update(last[k], 0);
+            ans[k] += seg.query(i, last[k]);
+        }
+    }
+
+    for (auto& a : ans)
+        cout << a << " "; cout << endl;
 }
