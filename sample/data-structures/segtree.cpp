@@ -34,7 +34,8 @@ struct Segtree {
 
     ll update(int i, int x) { return update(i, x, 1, 0, n-1); }
 
-    // for sum segtree in non-negative terms, computes largest j such that v[i] + ... + v[j-1] < sum
+    // for sum segtree in non-negative terms, computes largest j such that 
+    // v[i] + ... + v[j-1] < sum
     ll lower_bound(int i, ll& val, int p, int l, int r) {
         if (r < i) return n;
         if (i <= l and seg[p] < val) {
