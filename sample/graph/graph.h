@@ -8,4 +8,5 @@ struct Graph {
     void bfs(int);
     vi conncomp();
     vi toposort();
+    vi articulations();
 };
