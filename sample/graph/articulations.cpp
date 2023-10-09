@@ -21,8 +21,8 @@ vi Graph::articulations() {
         return low;
     };
 
-    for (int i=0; i < n; i++)
-        if (!exp[i]) dfs(i, -1);
+    for (int u=0; u < n; u++)
+        if (!exp[u]) dfs(u, -1);
     
     return art;
 }
